@@ -10,24 +10,26 @@
 ;                                                                              ;
 ; **************************************************************************** ;
 
+global  ft_write
+    extern  __errno_location
 
 section.data:
-    SYS_WRITE       equ 0x2000004
+    SYS_WRITE       equ 1
 
 section.text:
-    global  _ft_write
-    extern  ___error
 
-_ft_write:
+ft_write:
     mov     rax, SYS_WRITE
     syscall
-    jc        _error
+    test	rax, rax                        ; set SF to 1 if eax < 0 (negative)
+    js        _error                        ; jump if SF == 1 sign flaggie
     ret
 
 _error:
-    push    rax                    ; save errno return value on top of the stack
-    call    ___error    ; return rax = error();
-    pop     rdx                    ; popping means restoring whatever is on top of the stack into a register.
-    mov     [rax], rdx            ;*rax = rdx
-    mov        rax, -1
+    neg     rax
+    push    rax                             ; save errno return value on top of the stack
+    call    __errno_location wrt ..plt      ; return rax = error();
+    pop     rdx                             ; popping means restoring whatever is on top of the stack into a register.
+    mov     [rax], rdx                      ;*rax = rdx
+    mov     rax, -1
     ret

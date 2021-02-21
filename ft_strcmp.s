@@ -10,11 +10,11 @@
 ;                                                                              ;
 ; **************************************************************************** ;
 
-global _ft_strcmp
+global ft_strcmp
 
 section .text
 
-_ft_strcmp:
+ft_strcmp:
 	xor		rax, rax
 
 _countloop:

@@ -1,7 +1,7 @@
 NAME = libasm.a
 
-#FLAGS = -f elf64
-FLAGS = -f macho64
+FLAGS = -f elf64
+#FLAGS = -f macho64
 DEBUG =  -g -F dwarf
 
 CC = nasm
