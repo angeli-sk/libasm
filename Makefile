@@ -1,7 +1,7 @@
 NAME = libasm.a
 
-FLAGS = -f elf64
-
+#FLAGS = -f elf64
+FLAGS = -f macho64
 DEBUG =  -g -F dwarf
 
 CC = nasm
@@ -33,16 +33,15 @@ all: $(NAME)
 
 $(NAME):$(OBJ)
 	@echo "$(X)$(Y)$(Z)✿	Compiling $@$(WHITE)\n"
-	$(TZE)
 	@ar -rcs $(NAME) $^
-	@ld $(OBJ) -o $(NAME)
+	# @ld $(OBJ) -o $(NAME)
 	@echo "$(WHITE)--------------------------------"
 	@echo "$(PINK2)✨	Compilation Done! $(WHITE)"
 
-main: $^ main.c
+main: main.c
 	@echo "$(X)$(Y)$(Z)✿	Compiling $@$(WHITE)\n"
 	$(TZE)
-	gcc main.c libasm.a -Wall -Werror -Wextra
+	gcc main.c -I . -L . -lasm -Wall -Werror -Wextra
 	@echo "$(WHITE)--------------------------------"
 	@echo "$(PINK2)✨	Compilation Done! $(WHITE)"
 

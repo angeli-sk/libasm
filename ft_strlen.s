@@ -10,11 +10,11 @@
 ;                                                                              ;
 ; **************************************************************************** ;
 
-global ft_strlen
+global _ft_strlen
 
 section .text
 
-ft_strlen:
+_ft_strlen:
 	xor		rax, rax				; set rax to 0
 	jmp 	_count_loop
 

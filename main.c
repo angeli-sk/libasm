@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
 int main(void)
 {
@@ -33,7 +34,8 @@ int main(void)
 
 	printf("\033[38;5;46m▛▝▝▝▝▝▝▝▝▝▝▝▝▝    ft_write   ▝▝▝▝▝▝▝▝▝▝▝▝▝ ▜\n");
 	printf("\033[38;5;28m");
-	ft_write(1, "My write lemao\n", 16);
+	ft_write(-1, "My write lemao\n", 16);
+	perror("error lemao");
 	printf("\033[38;5;22m");
 	write(1, "OG write lemao\n", 16);
 	printf("\033[38;5;46m▙ ▖▖▖▖▖▖▖▖▖▖▖▖▖     END      ▖▖▖▖▖▖▖▖▖▖▖▖▖▖▟\n");

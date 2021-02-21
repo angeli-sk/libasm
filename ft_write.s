@@ -11,25 +11,23 @@
 ; **************************************************************************** ;
 
 
-global ft_write
-extern 		__errno_location
+section.data:
+    SYS_WRITE       equ 0x2000004
 
-section .data
+section.text:
+    global  _ft_write
+    extern  ___error
 
-	SYS_WRITE       equ 1
-
-section .text
-
-ft_write:
-    mov 	rax, SYS_WRITE
-	syscall
-    jc		_error
-	ret
+_ft_write:
+    mov     rax, SYS_WRITE
+    syscall
+    jc        _error
+    ret
 
 _error:
-	push	rax					; save errno return value on top of the stack
-	call	__errno_location	; return rax = error();
-	pop 	rdx					; popping means restoring whatever is on top of the stack into a register.
-	mov 	[rax], rdx			;*rax = rdx
-	mov		rax, -1
-	ret
+    push    rax                    ; save errno return value on top of the stack
+    call    ___error    ; return rax = error();
+    pop     rdx                    ; popping means restoring whatever is on top of the stack into a register.
+    mov     [rax], rdx            ;*rax = rdx
+    mov        rax, -1
+    ret
