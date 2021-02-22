@@ -1,0 +1,108 @@
+Notes assembly/nasm/x64:
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
+
+general purpose registers:
+    AL/AX/EAX/RAX: Accumulator (Return value)
+    !BL/BX/EBX/RBX: Base index, should be (!-->)saved before using (for use with arrays)
+    CL/CX/ECX/RCX: Counter (for use with loops and strings) (4th function argument)
+    DL/DX/EDX/RDX: Extend the precision of the accumulator (e.g. combine 32-bit EAX and EDX for 64-bit integer operations in 32-bit code) 3rd function argument
+    SIL/SI/ESI/RSI: Source index for string operations. (2nd function argument)
+    DIL/DI/EDI/RDI: Destination index for string operations. (1st function argument)
+special purpose registers:
+    BPL/BP/EBP/RBP: Stack base pointer for holding the address of the current stack frame.
+    SPL/SP/ESP/RSP: Stack pointer for top address of the stack.
+    IP/EIP/RIP: Instruction pointer. Holds the program counter, the address of next instruction.
+    FLAGS/EFLAGS/RFLAGS: Flags and condition codes
+
+RBP
+"rbp" is a preserved register, so you need to save its value before you can use it
+Main might be storing something important in rbp, and will complain if you just change it, but as long as you put it back exactly how it was before you return, main is perfectly happy letting you use it!
+Without the push and pop, main will be annoyed that you messed with its stuff, which in a real program often means a strange and difficult to debug crash.
+
+    R8B/R8W/R8D/R8
+    R9B/R9W/R9D/R9
+
+    R10B/R10W/R10D/R10
+    R11B/R11W/R11D/R11
+
+R10 and R11 are call-clobbered scratch regs. A transparent wrapper function written in asm might use them for scratch space without disturbing any of the args in RCX,RDX,R8,R9,
+and without needing to save/restore a call-preserved register anywhere.
+A clobbered register is a register which is trashed i.e. modified in unpredictable way by inline assembler. This usually happens when you need a temp. register or use particular instruction which happens to modify some register as a by-product.
+    !R12B/R12W/R12D/R12
+    !R13B/R13W/R13D/R13
+    !R14B/R14W/R14D/R14
+    !R15B/R15W/R15D/R15
+
+R12..R15 are call-preserved registers you can use for whatever you want, as long as your save/restore them before returning.
+
+https://cs61.seas.harvard.edu/site/2018/Asm1/
+
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
+
+DIRECTION FLAG:
+This flag is used in string operations, and specifies if strings begin at a low address and proceed to higher addresses or vice versa.
+
+For string instructions, ECX has the number of iterations, DS:ESI has the source address and ES:EDI has the destination (hence the s in ESI and the d in EDI).
+
+After each iteration, ECX is decremented by one, and ESI and EDI are either incremented or decremented by the element size (1 for byte operations, 2 for word operations etc) according to EFLAGS.DF.
+
+If EFLAGS.DF is 0, ESI and EDI are incremented, otherwise they're decremented.
+
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
+
+push register == sub rsp, sizeof(register) en mov rsp + 8, register
+
+rsp changes with each push/pop but I set the rbp to the initial value of rsp, so that's the bottom of my stack.
+
+prologue is
+    push rbp
+    mov rbp, rsp
+
+epilogue
+    mov rsp, rbp
+    pop rbp
+
+push rbp
+mov rbp, rsp
+push rdi    ;some argument that I want to keep for the duration of my function
+            ;now I can refer to this thing with [rbp + 0]
+push rsi    ;something else I also dont want to lose
+            ;now I can refer to this thing with [rbp - 8] (8 because rdi is an 8 byte register)
+
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
+
+LEA, the only instruction that performs memory addressing calculations but doesn't actually address memory. LEA accepts a standard memory addressing operand, but does nothing more than store the calculated memory offset in the specified register, which may be any general purpose register.
+
+What does that give us? Two things that ADD doesn't provide:
+    the ability to perform addition with either two or three operands, and
+    the ability to store the result in any register; not just one of the source operands.
+
+And LEA does not alter the flags.
+
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
+
+C TIPS!!:
+
+Put function arguments (first to last) in the following registers (64 bit representations): RDI, RSI, RDX, RCX, R8, R9, then push to stack (in reverse, has to be cleaned up by the caller!) XMM0 - XMM7 for floats
+
+Return values are stored in RAX (int) or XMM0 (float)
+
+RBP, RBX, R12, R13, R14, R15 will not be changed by the called function, all others may be
+
+Align stack pointer (RSP) to 16 byte, calling pushes 8 bytes!
+
+Keep in mind that strings (in C) are 0-terminated
+
+Like in a normal C program, the label that is (de facto) called first is main, with the args argc (argcount) in RDI, and the char** argv in RSI (the commandline arguments as in C's main function).
+
+https://gist.github.com/justinian/385c70347db8aca7ba93e87db90fc9a6
+
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
+
+Calling Procedures Outside the Library
+
+Calling procedures outside your shared library has to be done by means of a procedure linkage table, or PLT. The PLT is placed at a known offset from where the library is loaded, so the library code can make calls to the PLT in a position-independent way. Within the PLT there is code to jump to offsets contained in the GOT, so function calls to other shared libraries or to routines in the main program can be transparently passed off to their real destinations.
+
+To call an external routine, you must use another special PIC relocation type, WRT ..plt. This is much easier than the GOT-based ones: you simply replace calls such as CALL printf with the PLT-relative version CALL printf WRT ..plt.
+
+°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•°•
