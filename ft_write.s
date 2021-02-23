@@ -29,5 +29,5 @@ _error:
     call    ___error    ; return rax = error();
     pop     rdx                    ; popping means restoring whatever is on top of the stack into a register.
     mov     [rax], rdx            ;*rax = rdx
-    mov        rax, -1
+    mov     rax, -1
     ret
