@@ -55,7 +55,7 @@ clean:
 
 fclean: clean
 	@echo "$(PINK)🦄	Removing $(NAME) ...\n\n$(WHITE)"
-	-rm -f $(NAME)
+	-rm -f $(NAME) a.out
 	@echo "\n$(PINK2)✨	Removed $(NAME)!$(WHITE)"
 	@echo "$(WHITE)--------------------------------\n"
 
