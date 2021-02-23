@@ -1,8 +1,20 @@
+; ************************************************************************** ;
+;                                                                            ;
+;                                                        ::::::::            ;
+;   ft_strdup.s                                        :+:    :+:            ;
+;                                                     +:+                    ;
+;   By: akramp <akramp@student.codam.nl>             +#+                     ;
+;                                                   +#+                      ;
+;   Created: 2021/02/23 13:48:03 by akramp        #+#    #+#                 ;
+;   Updated: 2021/02/23 13:48:03 by akramp        ########   odam.nl         ;
+;                                                                            ;
+; ************************************************************************** ;
+
 global ft_strdup
-	extern  	__errno_location
-	extern		malloc
-	extern		ft_strlen
-	extern		ft_strcpy
+extern  	__errno_location
+extern		malloc
+extern		ft_strlen
+extern		ft_strcpy
 
 section .text
 
@@ -28,12 +40,7 @@ _cpy:
 
 _error:
 	pop		rdi
-    neg     rax
-    push    rax                             ; save errno return value on top of the stack
-    call    __errno_location wrt ..plt      ; return rax = error();
-    pop     rdx                             ; popping means restoring whatever is on top of the stack into a register.
-    mov     [rax], rdx                      ;*rax = rdx
-    mov     rax, -1
+    mov     rax, 0
     ret
 
 

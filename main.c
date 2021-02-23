@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   main.c                                             :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: akramp <akramp@student.codam.nl>             +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/02/23 13:24:19 by akramp        #+#    #+#                 */
+/*   Updated: 2021/02/23 13:24:22 by akramp        ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libasm.h"		/*	assembly lib			*/
 #include <unistd.h>		/*	read & write			*/
 #include <stdlib.h>		/*	malloc & free			*/
@@ -13,8 +25,8 @@ int main(void)
 	char len;
 	int fd;
 
-	mylen = ft_strlen("This string is 34 characters long\n");
-	len = ft_strlen("This string is 34 characters long\n");
+	mylen = ft_strlen("1");
+	len = ft_strlen("1");
 	printf("\033[38;5;46m▛▝▝▝▝▝▝▝▝▝▝▝▝▝   ft_strlen   ▝▝▝▝▝▝▝▝▝▝▝▝▝ ▜\n");
 
 	printf("\033[38;5;28mMy strlen: %d\n", mylen);
@@ -28,8 +40,8 @@ int main(void)
 	str = malloc(sizeof(char) * len);
 	if (!str)
 		return (-1);
-	ft_strcpy(mystr, "This string is characters long");
-	strcpy(str, "This string is 34 characters long");
+	ft_strcpy(mystr, "1");
+	strcpy(str, "1");
 	printf("\033[38;5;28mMy strcpy: %s\n", mystr);
 	printf("\033[38;5;22mOG strcpy: %s\n", str);
 
